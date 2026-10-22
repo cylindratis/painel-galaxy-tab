@@ -1,0 +1,15 @@
+package br.casasala.painel;
+import android.content.Context;import android.graphics.*;import android.view.*;
+/** Native HSV disc: angle is hue; distance from the white centre is saturation. */
+public final class ColorWheel extends View{
+ public interface Listener{void changed(float hue,float saturation);void released();}
+ private Listener listener;private float hue,saturation=100,cx,cy,r;private Bitmap face;private final Paint p=new Paint(3);
+ public ColorWheel(Context c){super(c);setFocusable(true);setContentDescription("Disco RGB: cor e saturação. Setas esquerda/direita mudam a cor; cima/baixo ajustam saturação.");}
+ public void setListener(Listener l){listener=l;}public void setColor(float h,float s){hue=h;saturation=s;invalidate();}
+ protected void onSizeChanged(int w,int h,int ow,int oh){cx=w/2f;cy=h/2f;r=Math.min(cx,cy)-8*getResources().getDisplayMetrics().density;if(face!=null)face.recycle();int size=Math.min(360,Math.max(32,Math.min(w,h)));face=Bitmap.createBitmap(size,size,Bitmap.Config.ARGB_8888);Canvas c=new Canvas(face);float mid=size/2f,rad=mid-2;p.setShader(new SweepGradient(mid,mid,new int[]{Color.RED,Color.YELLOW,Color.GREEN,Color.CYAN,Color.BLUE,Color.MAGENTA,Color.RED},null));c.drawCircle(mid,mid,rad,p);p.setShader(new RadialGradient(mid,mid,rad,Color.WHITE,0x00ffffff,Shader.TileMode.CLAMP));c.drawCircle(mid,mid,rad,p);p.setShader(null);}
+ protected void onDraw(Canvas c){if(face==null||r<=0)return;p.setStyle(Paint.Style.FILL);c.drawBitmap(face,null,new RectF(cx-r,cy-r,cx+r,cy+r),p);float x=cx+(float)Math.cos(hue*Math.PI/180)*r*saturation/100,y=cy+(float)Math.sin(hue*Math.PI/180)*r*saturation/100;float d=getResources().getDisplayMetrics().density;p.setStyle(Paint.Style.STROKE);p.setColor(0xff202020);p.setStrokeWidth(5*d);c.drawCircle(x,y,8*d,p);p.setColor(Color.WHITE);p.setStrokeWidth(3*d);c.drawCircle(x,y,8*d,p);p.setStyle(Paint.Style.FILL);}
+ private void changed(){setContentDescription("Cor "+Math.round(hue)+" graus; saturação "+Math.round(saturation)+" por cento");invalidate();if(listener!=null)listener.changed(hue,saturation);}
+ public boolean onTouchEvent(android.view.MotionEvent e){if(e.getAction()==0||e.getAction()==2){getParent().requestDisallowInterceptTouchEvent(true);float x=e.getX()-cx,y=e.getY()-cy;hue=(float)((Math.atan2(y,x)*180/Math.PI+360)%360);saturation=Math.min(100,(float)Math.sqrt(x*x+y*y)/Math.max(1,r)*100);changed();return true;}if(e.getAction()==1){getParent().requestDisallowInterceptTouchEvent(false);performClick();if(listener!=null)listener.released();return true;}if(e.getAction()==3){getParent().requestDisallowInterceptTouchEvent(false);return true;}return true;}
+ public boolean performClick(){super.performClick();return true;}
+ public boolean onKeyDown(int key,android.view.KeyEvent e){if(key==21)hue=(hue+357)%360;else if(key==22)hue=(hue+3)%360;else if(key==19)saturation=Math.min(100,saturation+5);else if(key==20)saturation=Math.max(0,saturation-5);else return super.onKeyDown(key,e);changed();if(listener!=null)listener.released();return true;}
+}

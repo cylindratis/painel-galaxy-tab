@@ -1,0 +1,14 @@
+package br.casasala.painel;
+import android.content.Context;import android.graphics.*;import android.view.*;
+/** Warm-to-cool vertical pill with a broad outlined thumb, drawn without raster assets. */
+public final class TemperatureBar extends View{
+ public interface Listener{void changed(int value);void released();}private Listener listener;private int value;private final Paint p=new Paint(3);private final RectF bounds=new RectF();private float pad;
+ public TemperatureBar(Context c){super(c);setFocusable(true);setContentDescription("Temperatura do branco: quente em cima, frio embaixo");}
+ public void setListener(Listener l){listener=l;}public void setValue(int n){value=Math.max(0,Math.min(100,n));invalidate();}
+ protected void onSizeChanged(int w,int h,int ow,int oh){pad=7*getResources().getDisplayMetrics().density;bounds.set(pad,pad,w-pad,h-pad);}
+ protected void onDraw(Canvas c){float d=getResources().getDisplayMetrics().density;float radius=bounds.width()/2;p.setStyle(Paint.Style.FILL);p.setShader(new LinearGradient(0,bounds.top,0,bounds.bottom,new int[]{0xffff952e,0xfffff1e5,0xffd4dfff},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRoundRect(bounds,radius,radius,p);p.setShader(null);float thumb=30*d;float y=bounds.top+(bounds.height()-thumb)*value/100f;RectF knob=new RectF(bounds.left-2*d,y,bounds.right+2*d,y+thumb);p.setColor(value<50?blend(0xffff952e,0xfffff1e5,value/50f):blend(0xfffff1e5,0xffd4dfff,(value-50)/50f));c.drawRoundRect(knob,thumb/2,thumb/2,p);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(3*d);p.setColor(Color.WHITE);c.drawRoundRect(knob,thumb/2,thumb/2,p);p.setStyle(Paint.Style.FILL);}
+ private int blend(int a,int b,float f){return Color.rgb((int)(Color.red(a)+(Color.red(b)-Color.red(a))*f),(int)(Color.green(a)+(Color.green(b)-Color.green(a))*f),(int)(Color.blue(a)+(Color.blue(b)-Color.blue(a))*f));}
+ private void changed(){setContentDescription("Temperatura do branco "+value+" por cento; zero quente, cem frio");invalidate();if(listener!=null)listener.changed(value);}
+ public boolean onTouchEvent(android.view.MotionEvent e){if(e.getAction()==0||e.getAction()==2){getParent().requestDisallowInterceptTouchEvent(true);value=Math.max(0,Math.min(100,Math.round((e.getY()-pad)/(Math.max(1,getHeight()-2*pad))*100)));changed();return true;}if(e.getAction()==1){getParent().requestDisallowInterceptTouchEvent(false);performClick();if(listener!=null)listener.released();return true;}if(e.getAction()==3){getParent().requestDisallowInterceptTouchEvent(false);return true;}return true;}
+ public boolean performClick(){super.performClick();return true;}public boolean onKeyDown(int key,android.view.KeyEvent e){if(key==19)value=Math.max(0,value-2);else if(key==20)value=Math.min(100,value+2);else return super.onKeyDown(key,e);changed();if(listener!=null)listener.released();return true;}
+}

@@ -1,0 +1,5 @@
+.env
+models
+*.json
+*.wav
+__pycache__

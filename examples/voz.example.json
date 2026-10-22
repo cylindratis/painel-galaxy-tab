@@ -1,0 +1,6 @@
+{
+  "schema": "painel-voz",
+  "version": 1,
+  "url": "http://192.0.2.10:8766",
+  "token": "REPLACE_WITH_A_RANDOM_PRIVATE_TOKEN"
+}

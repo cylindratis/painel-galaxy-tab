@@ -1,0 +1,22 @@
+# Credentials and local state
+.env
+!.env.example
+**/config.json
+**/devices.json
+**/tinytuya.json
+**/tuya-raw.json
+**/snapshot.json
+**/voz-tablet.json
+*.jks
+*.keystore
+*.p12
+*.pem
+*.log
+*.wav
+android/build/
+android/tools/
+android/signing/
+voice/models/
+__pycache__/
+.venv/
+*.apk

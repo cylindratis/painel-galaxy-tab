@@ -1,0 +1,19 @@
+services:
+  voz:
+    build: .
+    image: painel-voz:0.7
+    container_name: painel-voz
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    environment:
+      VOICE_TOKEN: ${VOICE_TOKEN:?Defina VOICE_TOKEN no arquivo .env}
+      WHISPER_MODEL: small
+      WAKE_THRESHOLD: "0.55"
+    volumes:
+      - ./models:/models
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "2"}

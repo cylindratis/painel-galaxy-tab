@@ -1,0 +1,9 @@
+config.json
+.env
+devices.json
+tinytuya.json
+tuya-raw.json
+snapshot.json
+__pycache__
+.venv*
+test_server.py

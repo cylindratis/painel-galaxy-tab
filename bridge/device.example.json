@@ -1,0 +1,10 @@
+{
+  "id": "luz-sala",
+  "name": "Luz da sala",
+  "room": "Sala",
+  "device_id": "ID_REAL_DO_DISPOSITIVO",
+  "ip": "192.0.2.50",
+  "local_key": "CHAVE_LOCAL_REAL",
+  "version": 3.3,
+  "switch_dp": 1
+}

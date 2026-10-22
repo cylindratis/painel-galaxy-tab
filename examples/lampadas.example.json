@@ -1,0 +1,23 @@
+{
+  "schema": "painel-tuya",
+  "version": 1,
+  "devices": [
+    {
+      "id": "example-light",
+      "name": "Luminária de exemplo",
+      "room": "Ambiente de exemplo",
+      "device_id": "REPLACE_WITH_DEVICE_ID",
+      "ip": "192.0.2.50",
+      "local_key": "0123456789abcdef",
+      "version": 3.3,
+      "switch_dp": "20",
+      "mode_dp": "21",
+      "brightness_dp": "22",
+      "temperature_dp": "23",
+      "color_dp": "24",
+      "brightness_min": 10,
+      "brightness_max": 1000,
+      "color_format": "hsv16"
+    }
+  ]
+}

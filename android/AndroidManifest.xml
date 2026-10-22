@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="br.casasala.painel" android:versionCode="8" android:versionName="0.8.0">
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:anyDensity="true" />
+    <application android:label="Painel" android:icon="@drawable/icon" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:debuggable="false">
+        <activity android:name=".MainActivity" android:screenOrientation="sensor" android:configChanges="keyboardHidden|orientation" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

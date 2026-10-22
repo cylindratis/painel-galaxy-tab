@@ -1,0 +1,9 @@
+package br.casasala.painel;
+import java.net.HttpURLConnection;import java.net.URL;import java.net.URLEncoder;import java.io.ByteArrayOutputStream;import java.io.InputStream;import org.json.JSONObject;import org.json.JSONArray;
+/** Public HTTP endpoint for Froyo. Translation is best effort; the original remains available. */
+public final class QuoteClient{
+ public static JSONObject fetch()throws Exception{String payload;try{payload=get("http://quotable.io/random?maxLength=110");}catch(Exception first){payload=get("http://api.quotable.io/random?maxLength=110");}JSONObject raw=new JSONObject(payload);String original=raw.getString("content");if(original.length()>500)throw new Exception("Frase muito longa.");JSONObject q=new JSONObject().put("original",original).put("text",original).put("author",raw.optString("author")).put("source","Quotable").put("translated",false);
+  try{JSONArray result=new JSONArray(get("http://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q="+URLEncoder.encode(original,"UTF-8")));JSONArray pieces=result.getJSONArray(0);String translated="";for(int i=0;i<pieces.length();i++)translated+=pieces.getJSONArray(i).optString(0);if(translated.length()>0&&translated.length()<700)q.put("text",translated).put("translated",true);}catch(Exception ignored){}return q;
+ }
+ private static String get(String address)throws Exception{HttpURLConnection c=(HttpURLConnection)new URL(address).openConnection();c.setConnectTimeout(5000);c.setReadTimeout(6000);c.setRequestProperty("Accept","application/json");try{if(c.getResponseCode()!=200)throw new Exception("Frase indisponível.");InputStream in=c.getInputStream();try{ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] buffer=new byte[1024];int n;while((n=in.read(buffer))!=-1){if(out.size()+n>32768)throw new Exception("Resposta longa.");out.write(buffer,0,n);}return new String(out.toByteArray(),"UTF-8");}finally{in.close();}}finally{c.disconnect();}}
+}
