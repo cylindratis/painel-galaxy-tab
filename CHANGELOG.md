@@ -1,5 +1,13 @@
 # Histórico
 
+## 0.9.0
+
+- MAGI Clássico e MAGI Alerta inspirados em Evangelion: molduras angulares, âmbar/verde ou vermelho.
+- Somente Helvetica/sans-serif do tablet, em maiúsculas.
+- Relógio MAGI com três módulos de horas/minutos/segundos e seletores/TV/mídia adaptados às novas paletas.
+
+- Corrigido cálculo de altura dos cartões após girar o tablet.
+
 ## 0.8.0
 
 - Tema LCARS inspirado em The Next Generation, selecionável sem alterar os demais temas.

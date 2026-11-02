@@ -22,7 +22,7 @@ def run(*items):
     subprocess.run([str(x) for x in items], check=True)
 run(args.java, '-jar', tools / 'ecj.jar', '-1.6', '-encoding', 'UTF-8', '-nowarn',
     '-bootclasspath', android, '-classpath', root / 'android/build/classes', '-d', classes,
-    root / 'tests/V8SmokeTest.java', root / 'tests/V8ReleaseCheck.java')
+    root / 'tests/V8SmokeTest.java', root / 'tests/V8ReleaseCheck.java', root / 'tests/V9SmokeTest.java')
 run(args.java, '-jar', sdk / 'lib/dx.jar', '--dex', '--min-sdk-version=8',
     '--output=' + str(build / 'classes.dex'), classes)
 run(sdk / ('aapt.exe' if os.name == 'nt' else 'aapt'), 'package', '-f',

@@ -20,7 +20,7 @@ public final class WeatherPanel extends ScrollView {
     public WeatherPanel(Context c,VisualTheme t){super(c);theme=t;density=getResources().getDisplayMetrics().density;body=col();addView(body);}
     private int dp(int n){return Math.round(n*density);}
     private LinearLayout col(){LinearLayout v=new LinearLayout(getContext());v.setOrientation(1);return v;}
-    private TextView text(String s,int size,int ink){TextView v=new TextView(getContext());v.setText(s);if(theme.id.equals("lcars"))v.setTypeface(LcarsTypeface.get(getContext(),theme));v.setTextColor(ink);v.setTextSize(size);v.setPadding(0,dp(3),0,dp(3));return v;}
+    private TextView text(String s,int size,int ink){TextView v=new TextView(getContext());v.setText(s);if(theme.isMagi()){v.setTypeface(MagiTypeface.get(getContext(),size>=24));v.setTransformationMethod(new MagiCaps());}else if(theme.id.equals("lcars"))v.setTypeface(LcarsTypeface.get(getContext(),theme));v.setTextColor(ink);v.setTextSize(size);v.setPadding(0,dp(3),0,dp(3));return v;}
     public static String condition(int code){return code==0?"Céu limpo":code<=3?"Entre nuvens":code<=48?"Neblina":code<=67?"Chuva":code<=77?"Neve":code<=86?"Pancadas":"Trovoadas";}
     private String value(JSONObject d,String key,String unit){Object x=d.opt(key);return x==null||x==JSONObject.NULL?"—":String.valueOf(x)+unit;}
     private String clock(String value){return value.length()>=16?value.substring(11,16):"—";}

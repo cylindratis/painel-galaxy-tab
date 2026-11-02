@@ -39,3 +39,13 @@ adb shell am instrument -w br.casasala.test/.V8ReleaseCheck
 App e teste precisam da mesma assinatura: use `--keystore` e `PAINEL_KS_PASS` iguais nos dois builds. O teste completo salva PNGs no diretório privado `files` do app e restaura as preferências anteriores; o teste curto de release limpa as preferências do emulador e inicia em DEMO. Execute em um emulador ou instalação exclusiva para testes.
 
 Para reproduzir capturas menores, use também um perfil de 160 dpi. Não transfira preferências ou arquivos de importação pessoais para a instalação usada nas capturas públicas.
+
+## MAGI — 0.9
+
+`V9SmokeTest` percorre relógio, painel, RGBW, TV, mídia e previsão no MAGI Clássico, alterna para Branco e verifica persistência do MAGI Alerta. Mede as duas orientações, a ausência de rolagem e botões cortados, o uso de `Typeface.DEFAULT` nos comandos (Helvetica na instalação do usuário; o emulador conserva sua própria sans-serif). A troca de orientação aguarda as dimensões corretas da janela.
+
+```sh
+adb shell am instrument -w -e prefix v9 br.casasala.test/.V9SmokeTest
+```
+
+A grade agora recalcula suas alturas depois que o espaço disponível muda durante a rotação. O relógio MAGI usa três módulos com valores reais de hora/minuto/segundo; os outros temas preservam o mostrador analógico.

@@ -287,14 +287,14 @@ public class MainActivity extends Activity {
         voiceLabel=null;tvLabel=null;
         playerSignature="";shortcutRow=null;quoteView=null;clock = null; date = null; analog = null; weatherTemp = null; weatherInfo = null; weatherPanel=null;progressBar=null;progressText=null;lyricText=null;
         deviceGrid = null; rows = null; player = null; manager = null; pageLabel = null; search = null;
-        LinearLayout root = column(); root.setBackgroundDrawable(theme.pageBackground()); setContentView(root);
+        LinearLayout root = column(); root.setBackgroundDrawable(theme.pageBackground()); setContentView(root);if(theme.isMagi())magiText(root);
         LinearLayout nav = row(); nav.setGravity(Gravity.CENTER_VERTICAL); nav.setPadding(dp(10), dp(3), dp(10), dp(3)); nav.setBackgroundColor(theme.nav);
         String[] titles = {"Relógio", "Painel", "Mídia", "Tempo"}; final String[] targets = {"clock", "home", "music", "weather"};
-        for(int i=0;i<titles.length;i++){final String target=targets[i];Button tab=button(titles[i],screen.equals(target));tab.setTextSize(14);tab.setSingleLine(true);tab.setCompoundDrawables(new PanelIcon(target.equals("home")?"home":target.equals("music")?"music":target.equals("weather")?"weather":"clock",theme.controlInk(screen.equals(target)),dp(18)),null,null,null);tab.setCompoundDrawablePadding(dp(5));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(42),1);lp.setMargins(i==0?0:dp(5),0,0,0);nav.addView(tab,lp);tab.setOnClickListener(new View.OnClickListener(){public void onClick(View v){navigate(target);}});}
+        for(int i=0;i<titles.length;i++){final String target=targets[i];Button tab=button(titles[i],screen.equals(target));tab.setTextSize(14);tab.setSingleLine(true);tab.setCompoundDrawables(new PanelIcon(target.equals("home")?"home":target.equals("music")?"music":target.equals("weather")?"weather":"clock",theme.controlInk(screen.equals(target)),dp(18)),null,null,null);tab.setCompoundDrawablePadding(dp(5));if(theme.isMagi()&&portrait()){tab.setTextSize(13);tab.setPadding(dp(3),dp(5),dp(3),dp(5));tab.setCompoundDrawablePadding(dp(3));}LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(42),1);lp.setMargins(i==0?0:dp(5),0,0,0);nav.addView(tab,lp);tab.setOnClickListener(new View.OnClickListener(){public void onClick(View v){navigate(target);}});}
         connection=null;
         voiceIndicator=null;if(voice!=null&&voice.running()){voiceIndicator=new IconButton(this,"Microfone ligado. Toque para desligar.","mic",theme,true);LinearLayout.LayoutParams micLayout=new LinearLayout.LayoutParams(dp(42),dp(42));micLayout.leftMargin=dp(5);nav.addView(voiceIndicator,micLayout);voiceIndicator.setOnClickListener(new View.OnClickListener(){public void onClick(View v){voice.stop();setVoiceMessage("Microfone desligado");render();}});}
         root.addView(nav, new LinearLayout.LayoutParams(-1, dp(48)));
-        content = column();if(theme.id.equals("lcars")){content.setBackgroundDrawable(new LcarsFrame(getResources().getDisplayMetrics().density));content.setPadding(dp(34),dp(19),dp(12),dp(18));}else content.setPadding(dp(14), dp(12), dp(14), dp(12)); root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
+        content = column();if(theme.isMagi()){content.setBackgroundDrawable(new MagiFrame(this,theme));content.setPadding(dp(12),dp(38),dp(12),dp(10));}else if(theme.id.equals("lcars")){content.setBackgroundDrawable(new LcarsFrame(getResources().getDisplayMetrics().density));content.setPadding(dp(34),dp(19),dp(12),dp(18));}else content.setPadding(dp(14), dp(12), dp(14), dp(12)); root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
         if (screen.equals("settings")) renderSettings();
         else if(screen.equals("tv"))renderTv();
         else if(screen.equals("voice"))renderVoice();
@@ -305,19 +305,19 @@ public class MainActivity extends Activity {
         else if (screen.equals("weather")){weatherPanel=new WeatherPanel(this,theme);content.addView(weatherPanel,new LinearLayout.LayoutParams(-1,-1));weatherPanel.update(weather,demo);}
         else if (screen.equals("devices")) renderManager();
         else renderHome();
-        updateConnection(); updateClock();
+        updateConnection(); updateClock();if(theme.isMagi())magiText(root);
     }
 
     private void chooseTheme() {
-        final String[] ids = {"dark", "light", "bauhaus", "skeuo", "home", "lcars"};
-        new AlertDialog.Builder(this).setTitle("Estilo do painel").setItems(new String[]{"Escuro original", "Branco", "Bauhaus · creme e formas", "Skeumorfismo · tátil", "Casa · inspirado no Apple Home", "LCARS · The Next Generation"}, new DialogInterface.OnClickListener() {
+        final String[] ids = {"dark", "light", "bauhaus", "skeuo", "home", "lcars", "magi", "magi-red"};
+        new AlertDialog.Builder(this).setTitle("Estilo do painel").setItems(new String[]{"Escuro original", "Branco", "Bauhaus · creme e formas", "Skeumorfismo · tátil", "Casa · inspirado no Apple Home", "LCARS · The Next Generation", "MAGI · Clássico", "MAGI · Alerta"}, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface d, int p) { prefs.edit().putString("theme", ids[p]).commit(); theme = VisualTheme.get(ids[p]); render(); if (screen.equals("music")) loadLibrary(); }
         }).show();
     }
 
     private void renderHome(){
         LinearLayout heading=row();heading.setGravity(Gravity.CENTER_VERTICAL);heading.addView(text("Dispositivos",24,theme.ink),new LinearLayout.LayoutParams(0,-2,1));Button groups=button("Grupos",false),edit=button("Editar",false);heading.addView(groups,new LinearLayout.LayoutParams(dp(76),dp(38)));hgap(heading,6);heading.addView(edit,new LinearLayout.LayoutParams(dp(68),dp(38)));hgap(heading,6);Button television=new IconButton(this,"TV","tv",theme,false);heading.addView(television,new LinearLayout.LayoutParams(dp(42),dp(38)));television.setContentDescription("Controle da TV");television.setOnClickListener(new View.OnClickListener(){public void onClick(View v){navigate("tv");}});content.addView(heading);groups.setOnClickListener(new View.OnClickListener(){public void onClick(View v){chooseLightGroup();}});edit.setOnClickListener(new View.OnClickListener(){public void onClick(View v){navigate("devices");}});gap(content,8);
-        deviceGrid=portrait()?column():row();content.addView(deviceGrid,new LinearLayout.LayoutParams(-1,0,1));deviceGrid.post(new Runnable(){public void run(){drawDevices();}});
+        deviceGrid=portrait()?column():row();content.addView(deviceGrid,new LinearLayout.LayoutParams(-1,0,1));deviceGrid.post(new Runnable(){public void run(){drawDevices();}});final LinearLayout measuredGrid=deviceGrid;measuredGrid.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener(){private int width=-1,height=-1;public void onGlobalLayout(){if(measuredGrid!=deviceGrid)return;int w=measuredGrid.getWidth(),h=measuredGrid.getHeight();if(w>0&&h>0&&(w!=width||h!=height)){width=w;height=h;measuredGrid.post(new Runnable(){public void run(){if(measuredGrid==deviceGrid)drawDevices();}});}}});
     }
     private void renderClock(){
         LinearLayout main=portrait()?column():row();main.setGravity(Gravity.CENTER_VERTICAL);content.addView(main,new LinearLayout.LayoutParams(-1,0,1));
@@ -362,7 +362,7 @@ public class MainActivity extends Activity {
         int h=deviceGrid.getHeight()>0?deviceGrid.getHeight():getResources().getDisplayMetrics().heightPixels-dp(112),roomIndex=0,totalRows=0;for(ArrayList<JSONObject> list:rooms.values())totalRows+=(list.size()+1)/2;
         int portraitHeight=Math.min(dp(176),Math.max(dp(80),(h-dp(rooms.size()*30+(rooms.size()-1)*8)-dp(totalRows*6))/Math.max(1,totalRows)));
         for(String name:rooms.keySet()){ArrayList<JSONObject> items=rooms.get(name);int cols=portrait()?Math.min(2,items.size()):items.size()>=3?2:1,lines=(items.size()+cols-1)/cols;LinearLayout room=column();LinearLayout.LayoutParams rp=portrait()?new LinearLayout.LayoutParams(-1,-2):new LinearLayout.LayoutParams(0,-1,cols);rp.setMargins(portrait()?0:roomIndex==0?0:dp(10),portrait()&&roomIndex>0?dp(8):0,0,0);deviceGrid.addView(room,rp);roomIndex++;
-            LinearLayout label=row();label.setGravity(Gravity.CENTER_VERTICAL);label.addView(text(name,18,theme.ink),new LinearLayout.LayoutParams(0,-2,1));label.addView(text(String.valueOf(items.size()),12,theme.muted));room.addView(label,new LinearLayout.LayoutParams(-1,dp(28)));int tileHeight=portrait()?portraitHeight:Math.max(dp(88),(h-dp(32)-dp(lines*8))/Math.max(1,lines));LinearLayout line=null;
+            LinearLayout label=row();label.setGravity(Gravity.CENTER_VERTICAL);label.addView(text(name,18,theme.ink),new LinearLayout.LayoutParams(0,-2,1));label.addView(text(String.valueOf(items.size()),12,theme.muted));if(theme.isMagi()){label.setBackgroundDrawable(new MagiSurface(getResources().getDisplayMetrics().density,theme.id.equals("magi-red")?0xffff6249:0xff54bee7,theme.accent));label.setPadding(dp(8),0,dp(8),0);for(int t=0;t<label.getChildCount();t++)if(label.getChildAt(t) instanceof TextView)((TextView)label.getChildAt(t)).setTextColor(0xff071215);}room.addView(label,new LinearLayout.LayoutParams(-1,dp(28)));int tileHeight=portrait()?portraitHeight:Math.max(dp(88),(h-dp(32)-dp(lines*8))/Math.max(1,lines));LinearLayout line=null;
             for(int i=0;i<items.size();i++){if(i%cols==0){line=row();room.addView(line,new LinearLayout.LayoutParams(-1,tileHeight));if(i>0)((LinearLayout.LayoutParams)line.getLayoutParams()).topMargin=dp(6);}LinearLayout tile=deviceTile(items.get(i),tileHeight,false);LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,-1,1);tp.setMargins(0,0,i%cols==cols-1?0:dp(7),0);line.addView(tile,tp);}if(items.size()%cols!=0)line.addView(new View(this),new LinearLayout.LayoutParams(0,1,1));
         }
     }
@@ -977,17 +977,18 @@ public class MainActivity extends Activity {
     private int dp(float f) { return (int)(getResources().getDisplayMetrics().density * f + .5f); }
     private boolean compact() { return getResources().getDisplayMetrics().heightPixels / getResources().getDisplayMetrics().density < 470; }
     private LinearLayout row() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.HORIZONTAL); return l; }
+    private void magiText(android.view.View view){if(view instanceof TextView&&!(view instanceof EditText)){TextView t=(TextView)view;t.setTypeface(MagiTypeface.get(this,t.getTextSize()/getResources().getDisplayMetrics().scaledDensity>=24));t.setTransformationMethod(new MagiCaps());}if(view instanceof android.view.ViewGroup){android.view.ViewGroup group=(android.view.ViewGroup)view;for(int i=0;i<group.getChildCount();i++)magiText(group.getChildAt(i));}}
     private LinearLayout column() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
     private void gap(LinearLayout l, int height) { l.addView(new View(this), new LinearLayout.LayoutParams(1, dp(height))); }
     private void hgap(LinearLayout l, int width) { l.addView(new View(this), new LinearLayout.LayoutParams(dp(width), 1)); }
-    private TextView text(String s, float size, int color) { TextView t = new TextView(this); t.setText(s); t.setTextSize(Math.max(12,size)); t.setTextColor(color); t.setIncludeFontPadding(false);if(theme.id.equals("lcars"))t.setTypeface(LcarsTypeface.get(this,theme)); return t; }
+    private TextView text(String s, float size, int color) { TextView t = new TextView(this); t.setText(s); t.setTextSize(Math.max(12,size)); t.setTextColor(color); t.setIncludeFontPadding(false);if(theme.isMagi()){t.setTypeface(MagiTypeface.get(this,size>=24));t.setTransformationMethod(new MagiCaps());}else if(theme.id.equals("lcars"))t.setTypeface(LcarsTypeface.get(this,theme)); return t; }
     private LinearLayout card() { LinearLayout l = column(); l.setBackgroundDrawable(theme.background(this, theme.panel, false)); l.setPadding(dp(12), dp(11), dp(12), dp(11)); return l; }
     private Button button(String s, boolean selected) {
-        Button b = new Button(this); b.setText(s); b.setTextSize(14); b.setTextColor(theme.controlInk(selected));if(theme.id.equals("lcars")){b.setTypeface(LcarsTypeface.get(this,theme));} b.setPadding(dp(7), dp(5), dp(7), dp(5));
+        Button b = new Button(this); b.setText(s); b.setTextSize(14); b.setTextColor(theme.controlInk(selected));if(theme.isMagi()){b.setTypeface(MagiTypeface.get(this,false));b.setTransformationMethod(new MagiCaps());}else if(theme.id.equals("lcars")){b.setTypeface(LcarsTypeface.get(this,theme));} b.setPadding(dp(7), dp(5), dp(7), dp(5));
         b.setMinimumHeight(0); b.setMinHeight(dp(29)); b.setMinimumWidth(0); b.setMinWidth(0); b.setBackgroundDrawable(theme.buttonBackground(this, selected ? theme.accent : theme.panel, selected)); b.setPadding(dp(7), dp(5), dp(7), dp(5)); return b;
     }
     private EditText edit(String hint, String value, boolean password) {
-        EditText e = new EditText(this); e.setText(value); e.setHint(hint); e.setTextSize(14); e.setTextColor(theme.ink); e.setHintTextColor(theme.muted);
+        EditText e = new EditText(this); e.setText(value); e.setHint(theme.isMagi()?hint.toUpperCase(new java.util.Locale("pt","BR")):hint); e.setTextSize(14); e.setTextColor(theme.ink); e.setHintTextColor(theme.muted);
         e.setSingleLine(true); e.setPadding(dp(10), dp(7), dp(10), dp(7)); e.setBackgroundDrawable(theme.background(this, theme.panel, false));
         e.setPadding(dp(10), dp(7), dp(10), dp(7)); e.setInputType(InputType.TYPE_CLASS_TEXT | (password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : InputType.TYPE_TEXT_VARIATION_NORMAL)); return e;
     }

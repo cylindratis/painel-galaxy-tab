@@ -33,6 +33,8 @@ public final class VisualTheme {
     }
 
     public static VisualTheme get(String id) {
+        if("magi".equals(id))return new VisualTheme("magi","MAGI Clássico",0xff080b09,0xff101814,0xffffc568,0xffc6c4a0,0xffffa33b,0xff897047,0xff143b39,0xff080b09,0xff11140e,0xff080b09,0xffffc568,0xff7be5ac);
+        if("magi-red".equals(id))return new VisualTheme("magi-red","MAGI Alerta",0xff100606,0xff211010,0xffffb9a0,0xffdab3a2,0xffff674d,0xffa44c39,0xff401913,0xff100606,0xff190704,0xff100606,0xffffae89,0xffffc568);
         if("lcars".equals(id))return new VisualTheme("lcars","LCARS · TNG",0xff000000,0xff100d17,0xffffd5a3,0xffc6b7e6,0xffffb56c,0xff76628b,0xff2b213c,0xff000000,0xff100d17,0xff000000,0xffffd5a3,0xffb5a1dc);
         if ("bauhaus".equals(id)) {
             return new VisualTheme("bauhaus", "Bauhaus", 0xfff1ecdf, 0xfffaf6eb, 0xff20201e, 0xff615e54,
@@ -66,7 +68,9 @@ public final class VisualTheme {
      * A rounded native drawable, with tactile bevels only in the skeuomorphic
      * palette. Pass the desired surface/button color; its contrast is preserved.
      */
+    public boolean isMagi(){return id.equals("magi")||id.equals("magi-red");}
     public Drawable background(Context context, int color, boolean emphasized) {
+        if(isMagi())return new MagiSurface(context.getResources().getDisplayMetrics().density,color,emphasized?accent:edge);
         float density = context.getResources().getDisplayMetrics().density;
         float radius = ("skeuo".equals(id) ? 10 : "home".equals(id) ? 19 : "bauhaus".equals(id) ? 3 : 8) * density;
         int stroke = Math.max(1, Math.round(density));
@@ -86,6 +90,7 @@ public final class VisualTheme {
 
     /** Native pressed/focused feedback, sharing the theme's surfaces and outline. */
     public Drawable buttonBackground(Context context,int color,boolean selected){
+        if(isMagi()){android.graphics.drawable.StateListDrawable states=new android.graphics.drawable.StateListDrawable();float d=context.getResources().getDisplayMetrics().density;states.addState(new int[]{-android.R.attr.state_enabled},new MagiSurface(d,panel,edge));states.addState(new int[]{android.R.attr.state_pressed},new MagiSurface(d,selected?accent:onPanel,ink));states.addState(new int[]{android.R.attr.state_focused},new MagiSurface(d,selected?accent:onPanel,ink));states.addState(new int[]{},new MagiSurface(d,selected?accent:panel,accent));return states;}
         if("lcars".equals(id)){android.graphics.drawable.StateListDrawable lcars=new android.graphics.drawable.StateListDrawable();int fill=selected?accent:0xffb5a1dc;lcars.addState(new int[]{-android.R.attr.state_enabled},lcarsButton(context,0xff61516f));lcars.addState(new int[]{android.R.attr.state_pressed},lcarsButton(context,0xfff1c4da));lcars.addState(new int[]{android.R.attr.state_focused},lcarsButton(context,0xffffead0));lcars.addState(new int[]{},lcarsButton(context,fill));return lcars;}
         android.graphics.drawable.StateListDrawable states=new android.graphics.drawable.StateListDrawable();
         states.addState(new int[]{android.R.attr.state_pressed},"skeuo".equals(id)?new TactileSurface(context.getResources().getDisplayMetrics().density,color,true):background(context,mix(color,ink,.12f),true));

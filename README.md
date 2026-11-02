@@ -2,7 +2,7 @@
 
 Aplicativo **nativo para Android 2.2 / API 8**, feito para reaproveitar um tablet de 7 polegadas. Reúne relógio, lâmpadas Tuya Wi-Fi, Jellyfin, controle Samsung e previsão do tempo. O Home Assistant não é obrigatório.
 
-**Versão 0.8:** tema inspirado no LCARS de *Star Trek: The Next Generation*, fonte condensada incorporada e alternativa para usar a fonte do tablet. Esta edição pública começa sem nomes pessoais nem endereços de aparelhos.
+**Versão 0.9:** temas MAGI Clássico e MAGI Alerta, com Helvetica do tablet em maiúsculas. **Versão 0.8:** tema inspirado no LCARS de *Star Trek: The Next Generation*, fonte condensada incorporada e alternativa para usar a fonte do tablet. Esta edição pública começa sem nomes pessoais nem endereços de aparelhos.
 
 ![Relógio no tema LCARS — dados de demonstração](docs/images/lcars-clock.png)
 ![Dispositivos no tema LCARS — dados de demonstração](docs/images/lcars-devices.png)
@@ -18,7 +18,7 @@ Aplicativo **nativo para Android 2.2 / API 8**, feito para reaproveitar um table
 | TV Samsung | Pareamento LAN, volume, mudo, entradas, canais, navegação, transporte e tentativa de ligar por Wake-on-LAN |
 | Tempo | Sete dias, ícones, chance/volume de chuva, temperatura, vento, UV e recomendações com base na previsão |
 | Voz opcional | Palavra “Alexa”, português, pedidos de iluminação, TV, música e clima; reconhecimento e resposta em uma ponte Docker local |
-| Aparência | Branco, Escuro, Bauhaus, Casa, Tátil e LCARS; horizontal/vertical; tecla física Menu para ajustes e Busca para mídia |
+| Aparência | Branco, Escuro, Bauhaus, Casa, Tátil, LCARS, MAGI Clássico e MAGI Alerta; horizontal/vertical; tecla física Menu para ajustes e Busca para mídia |
 
 LCARS é uma interpretação gráfica original: fundo preto, curvas em L, barras segmentadas e tons pêssego/lilás, desenhados em Canvas. Não inclui imagens, logos ou sons extraídos da série. Projeto independente, sem vínculo com a franquia.
 
@@ -80,3 +80,13 @@ Android 2.2 não oferece a compatibilidade TLS de um sistema atual. Use o app e 
 - [Jellyfin](https://github.com/jellyfin/jellyfin), [TinyTuya](https://github.com/jasonacox/tinytuya), [Samsung TV WS API](https://github.com/xchwarze/samsung-tv-ws-api), [openWakeWord](https://github.com/dscripka/openWakeWord), [faster-whisper](https://github.com/SYSTRAN/faster-whisper), [eSpeak NG](https://github.com/espeak-ng/espeak-ng), [Open-Meteo](https://open-meteo.com/).
 
 As dependências, fonte e modelos conservam suas próprias licenças. Os modelos são baixados pela ponte, não incluídos no APK.
+
+## MAGI / Evangelion
+
+![MAGI Clássico — DEMO](docs/images/magi-classic.png)
+![MAGI Alerta — DEMO](docs/images/magi-alert.png)
+
+Ative **Menu > Tema > MAGI · Clássico** ou **MAGI · Alerta**. As duas opções usam apenas Helvetica/sans-serif padrão do tablet, em maiúsculas. A segunda opção é apenas uma paleta visual: não indica emergência na casa. A moldura é uma interpretação original sem imagens, logos ou sons extraídos da série.
+
+
+Referências visuais do MAGI: composição azul enviada pelo usuário, [animação de defesa](https://i.pinimg.com/originals/ec/e7/a0/ece7a0a55d883b4b378af50ff05c4549.gif) e [campanha licenciada Norton × Evangelion](https://japan.norton.com/evangelion_cp/). Os desenhos do aplicativo são próprios. No MAGI, os três módulos exibem horas/minutos/segundos reais; a fonte dos comandos vem do sistema do tablet.

@@ -18,14 +18,14 @@ public final class AnalogClockView extends View {
     private Bitmap dialCache;
     private boolean showSeconds=true,bauhaus=true,running;
     private int interval=17;
-    private final Runnable frame=new Runnable(){public void run(){if(!running)return;invalidate();postDelayed(this,interval);}};
-    public AnalogClockView(Context context,VisualTheme palette){super(context);theme=palette;paint.setTypeface(LcarsTypeface.get(context,palette));for(int i=0;i<60;i++){sin[i]=(float)Math.sin(i*Math.PI/30);cos[i]=(float)Math.cos(i*Math.PI/30);}setContentDescription("Relógio analógico");}
+    private final Runnable frame=new Runnable(){public void run(){if(!running)return;invalidate();postDelayed(this,theme.isMagi()?250:interval);}};
+    public AnalogClockView(Context context,VisualTheme palette){super(context);theme=palette;paint.setTypeface(palette.isMagi()?MagiTypeface.get(context,true):LcarsTypeface.get(context,palette));for(int i=0;i<60;i++){sin[i]=(float)Math.sin(i*Math.PI/30);cos[i]=(float)Math.cos(i*Math.PI/30);}setContentDescription(palette.isMagi()?"Relógio MAGI: horas, minutos e segundos":"Relógio analógico");}
     public void setTheme(VisualTheme palette){theme=palette;clearCache();invalidate();}
     public void setShowSeconds(boolean show){showSeconds=show;animate();invalidate();}
     public void setStyle(String style){bauhaus="bauhaus".equals(style);clearCache();invalidate();}
     public void setFrameRate(int rate){interval=rate>=60?17:33;animate();}
     public void tick(){invalidate();}
-    private void animate(){removeCallbacks(frame);if(running&&showSeconds)postDelayed(frame,interval);}
+    private void animate(){removeCallbacks(frame);if(running&&showSeconds)postDelayed(frame,theme.isMagi()?250:interval);}
     protected void onAttachedToWindow(){super.onAttachedToWindow();running=true;animate();}
     protected void onDetachedFromWindow(){running=false;removeCallbacks(frame);clearCache();super.onDetachedFromWindow();}
     protected void onWindowVisibilityChanged(int visibility){super.onWindowVisibilityChanged(visibility);running=visibility==VISIBLE;animate();}
@@ -37,6 +37,7 @@ public final class AnalogClockView extends View {
             clearCache();dialCache=Bitmap.createBitmap(getWidth(),getHeight(),Bitmap.Config.ARGB_8888);drawFace(new Canvas(dialCache),side,x,y);
         }
         paint.setStyle(Paint.Style.FILL);paint.setAlpha(255);c.drawBitmap(dialCache,0,0,null);
+        if(theme.isMagi()){time.setTimeInMillis(System.currentTimeMillis());c.save();c.translate(x-side/2,y-side/2);MagiDial.values(c,side,time,showSeconds,MagiTypeface.get(getContext(),true));c.restore();return;}
         int ink=isBauhaus()?0xff242421:theme.clockInk;
         time.setTimeInMillis(System.currentTimeMillis());float sec=time.get(Calendar.SECOND)+time.get(Calendar.MILLISECOND)/1000f,minute=time.get(Calendar.MINUTE)+sec/60f,hour=time.get(Calendar.HOUR)+minute/60f;
         if(isBauhaus()){c.save();c.rotate(hour*30,x,y);paint.setColor(ink);c.drawRect(x-side*.026f,y-side*.225f,x+side*.026f,y+side*.048f,paint);c.restore();hand(c,x,y,minute*6,side*.32f,side*.027f,0xff245f9e,side*.05f);}
@@ -44,11 +45,12 @@ public final class AnalogClockView extends View {
         if(showSeconds)hand(c,x,y,sec*6,side*.39f,Math.max(1,side*.006f),isBauhaus()?0xffbd3026:theme.clockAccent,side*.085f);
         paint.setStyle(Paint.Style.FILL);paint.setColor(showSeconds?(isBauhaus()?0xffbd3026:theme.clockAccent):ink);c.drawCircle(x,y,side*.021f,paint);
     }
-    private boolean isBauhaus(){return bauhaus&&!theme.id.equals("lcars");}
+    private boolean isBauhaus(){return bauhaus&&!theme.id.equals("lcars")&&!theme.isMagi();}
     private void clearCache(){if(dialCache!=null){dialCache.recycle();dialCache=null;}}
     private void drawFace(Canvas c,float side,float x,float y){
+        if(theme.isMagi()){c.save();c.translate(x-side/2,y-side/2);MagiDial.face(c,side,theme,MagiTypeface.get(getContext(),true));c.restore();return;}
         face.set(x-side*.49f,y-side*.49f,x+side*.49f,y+side*.49f);paint.setStyle(Paint.Style.FILL);paint.setColor(isBauhaus()?0xfffaf6eb:theme.clockFace);paint.setAlpha(255);
-        c.drawRoundRect(face,side*(isBauhaus()?.025f:.085f),side*(isBauhaus()?.025f:.085f),paint);int ink=isBauhaus()?0xff242421:theme.clockInk;paint.setStrokeCap(Paint.Cap.BUTT);
+        if(theme.isMagi()){android.graphics.Path outline=new android.graphics.Path();float k=side*.14f;outline.moveTo(face.left+k,face.top);outline.lineTo(face.right-k,face.top);outline.lineTo(face.right,face.top+k);outline.lineTo(face.right,face.bottom-k);outline.lineTo(face.right-k,face.bottom);outline.lineTo(face.left+k,face.bottom);outline.lineTo(face.left,face.bottom-k);outline.lineTo(face.left,face.top+k);outline.close();c.drawPath(outline,paint);paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(side*.005f);paint.setColor(theme.accent);c.drawPath(outline,paint);paint.setStyle(Paint.Style.FILL);}else c.drawRoundRect(face,side*(isBauhaus()?.025f:.085f),side*(isBauhaus()?.025f:.085f),paint);int ink=isBauhaus()?0xff242421:theme.clockInk;paint.setStrokeCap(Paint.Cap.BUTT);
         for(int i=0;i<60;i++){boolean hour=i%5==0;float outer=side*.435f,inner=outer-side*(hour?.046f:.016f);paint.setColor(ink);paint.setAlpha(hour?255:95);paint.setStrokeWidth(side*(hour?.012f:.003f));c.drawLine(x+sin[i]*inner,y-cos[i]*inner,x+sin[i]*outer,y-cos[i]*outer,paint);}
         paint.setAlpha(255);paint.setColor(ink);paint.setTextAlign(Paint.Align.CENTER);paint.setTextSize(side*.085f);float baseline=-(paint.ascent()+paint.descent())/2;
         for(int i=0;i<12;i++)if(!isBauhaus() || i%3==0)c.drawText(numerals[i],x+sin[i*5]*side*.32f,y-cos[i*5]*side*.32f+baseline,paint);
